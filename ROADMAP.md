@@ -1,4 +1,14 @@
-OmniSciDB is being intensively developed and is evolving quickly. In order to help the MapD developer community understand our near term priorities, this document shares work targeted for the next 3-6 months. Many of these items are the result of community requests.
+XDB is a progression of HeavyDB. Some queries in the database are slow. Some queries are not supported at all like searching a set of tuples.
+
+1 person has contributed to heavydb in 2024, and his pull request did not get merged.
+
+There are 20 open pull requests that haven't merged.
+
+This is an attempt to straighten out the boat.
+
+First step for me is to remove ARCGIS and all the geospatial optimizations. I don't believe it is necessary, and it lengthens the dependency list.
+
+When you can search by tuples, lat, long tuples will probably also get optimized.
 
 We welcome and encourage developer contributions to the project. Please see the [contribution guidelines](https://github.com/mapd/mapd-core#contributing) and [GitHub issues](https://github.com/mapd/mapd-core/issues).
 

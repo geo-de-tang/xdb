@@ -101,6 +101,12 @@ function download_make_install() {
     else
         ./configure --prefix=$PREFIX $3
     fi
+
+    # if the downloading xml-security-c, then patch before building
+    if [[ $artifact_name == *xml-security-c* ]]; then
+        patch /home/george/Documents/Projects/heavydb/heavydb/scripts/xml-security-c-2.0.2/xsec/enc/OpenSSL/OpenSSLCryptoKeyRSA.cpp < /home/george/Documents/Projects/heavydb/heavydb/fix_openssl_const_cast.patch
+    fi
+
     makej
     make_install
     popd
@@ -110,6 +116,11 @@ function download_make_install() {
 CMAKE_VERSION=3.25.2
 
 function install_cmake() {
+  if [[ -d $PREFIX/bin/cmake ]] ; then
+    echo "CMake already installed, skipping"
+    return
+  fi
+
   CXXFLAGS="-pthread" CFLAGS="-pthread" download_make_install ${HTTP_DEPS}/cmake-${CMAKE_VERSION}.tar.gz
 }
 
@@ -158,6 +169,13 @@ function install_boost() {
 ARROW_VERSION=apache-arrow-9.0.0
 
 function install_arrow() {
+
+  # if already $arrow version already exists then return and echo
+  if [[ -d $PREFIX/include/arrow ]] ; then
+    echo "Arrow already installed, skipping"
+    return
+  fi
+
   download https://github.com/apache/arrow/archive/$ARROW_VERSION.tar.gz
   extract $ARROW_VERSION.tar.gz
 
@@ -194,6 +212,13 @@ function install_arrow() {
 
 SNAPPY_VERSION=1.1.7
 function install_snappy() {
+
+  # if already $snappy version already exists then return and echo
+  if [[ -d $PREFIX/include/snappy ]] ; then
+    echo "Snappy already installed, skipping"
+    return
+  fi
+
   download https://github.com/google/snappy/archive/$SNAPPY_VERSION.tar.gz
   extract $SNAPPY_VERSION.tar.gz
   mkdir -p snappy-$SNAPPY_VERSION/build
@@ -214,6 +239,12 @@ AWSCPP_VERSION=1.7.301
 #AWSCPP_VERSION=1.9.335
 
 function install_awscpp() {
+    # if already $awscpp version already exists then return and echo
+    if [[ -d $PREFIX/include/aws ]] ; then
+        echo "AWS C++ SDK already installed, skipping"
+        return
+    fi
+
     # default c++ standard support
     CPP_STANDARD=14
     # check c++17 support
@@ -249,7 +280,14 @@ function install_awscpp() {
 LLVM_VERSION=14.0.6
 
 function install_llvm() {
+
+
     VERS=${LLVM_VERSION}
+    if [[ -d $PREFIX/include/llvm ]] ; then
+      echo "LLVM already installed, skipping"
+      return
+    fi
+    
     download ${HTTP_DEPS}/llvm/$VERS/llvm-$VERS.src.tar.xz
     download ${HTTP_DEPS}/llvm/$VERS/clang-$VERS.src.tar.xz
     download ${HTTP_DEPS}/llvm/$VERS/compiler-rt-$VERS.src.tar.xz
@@ -300,6 +338,12 @@ function install_llvm() {
 THRIFT_VERSION=0.15.0
 
 function install_thrift() {
+    # if already $thrift version already exists then return and echo
+    if [[ -d $PREFIX/include/thrift ]] ; then
+        echo "Thrift already installed, skipping"
+        return
+    fi
+
     # http://dlcdn.apache.org/thrift/$THRIFT_VERSION/thrift-$THRIFT_VERSION.tar.gz
     download ${HTTP_DEPS}/thrift-$THRIFT_VERSION.tar.gz
     extract thrift-$THRIFT_VERSION.tar.gz
@@ -334,6 +378,12 @@ PROJ_VERSION=8.2.1
 GDAL_VERSION=3.4.1
 
 function install_gdal() {
+    # if already $gdal version already exists then return and echo
+    if [[ -d $PREFIX/include/gdal ]] ; then
+        echo "GDAL already installed, skipping"
+        return
+    fi
+
     # sqlite3
     download_make_install https://sqlite.org/2021/sqlite-autoconf-3350500.tar.gz
 
@@ -383,6 +433,12 @@ function install_gdal() {
 GEOS_VERSION=3.8.1
 
 function install_geos() {
+  # if already $geos version already exists then return and echo
+  if [[ -d $PREFIX/include/geos ]] ; then
+    echo "GEOS already installed, skipping"
+    return
+  fi
+
     download_make_install ${HTTP_DEPS}/geos-${GEOS_VERSION}.tar.bz2 "" "--enable-shared --disable-static"
 
 }
@@ -391,6 +447,12 @@ FOLLY_VERSION=2021.02.01.00
 FMT_VERSION=7.1.3
 GLOG_VERSION=0.5.0
 function install_folly() {
+  # if already $folly version already exists then return and echo
+  if [[ -d $PREFIX/include/folly ]] ; then
+    echo "Folly already installed, skipping"
+    return
+  fi
+
   # Build Glog statically to remove dependency on it from heavydb CMake
   download https://github.com/google/glog/archive/refs/tags/v$GLOG_VERSION.tar.gz
   extract v$GLOG_VERSION.tar.gz
@@ -447,6 +509,11 @@ if [ "$LLVM_VERSION" != "$LLVM_VERSION_USED_FOR_IWYU" ]; then
   exit 1
 fi
 function install_iwyu() {
+  # if already $iwyu version already exists then return and echo
+  if [[ -d $PREFIX/include/include-what-you-use ]] ; then
+    echo "IWYU already installed, skipping"
+    return
+  fi
   download https://include-what-you-use.org/downloads/include-what-you-use-${IWYU_VERSION}.src.tar.gz
   extract include-what-you-use-${IWYU_VERSION}.src.tar.gz
   BUILD_DIR=include-what-you-use/build
@@ -463,6 +530,12 @@ function install_iwyu() {
 
 RDKAFKA_VERSION=1.1.0
 function install_rdkafka() {
+    # if already $rdkafka version already exists then return and echo
+    if [[ -d $PREFIX/include/librdkafka ]] ; then
+      echo "librdkafka already installed, skipping"
+      return
+    fi
+
     if [ "$1" == "static" ]; then
       STATIC="ON"
     else
@@ -491,6 +564,11 @@ function install_rdkafka() {
 GO_VERSION=1.15.6
 
 function install_go() {
+    # if already $go version already exists then return and echo
+    if [[ -d $PREFIX/go ]] ; then
+      echo "Go already installed, skipping"
+      return
+    fi
     VERS=${GO_VERSION}
     ARCH=$(uname -m)
     ARCH=${ARCH//x86_64/amd64}
@@ -508,6 +586,13 @@ function install_go() {
 NINJA_VERSION=1.11.1
 
 function install_ninja() {
+
+  # if already $ninja version already exists then return and echo
+  if [[ -d $PREFIX/bin/ninja ]] ; then
+    echo "Ninja already installed, skipping"
+    return
+  fi
+
   download https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip
   unzip -u ninja-linux.zip
   mkdir -p $PREFIX/bin/
@@ -520,6 +605,12 @@ function install_ninja() {
 MAVEN_VERSION=3.6.3
 
 function install_maven() {
+    # if already $maven version already exists then return and echo
+    if [[ -d $PREFIX/maven ]] ; then
+      echo "Maven already installed, skipping"
+      return
+    fi
+
     download ${HTTP_DEPS}/apache-maven-${MAVEN_VERSION}-bin.tar.gz
     extract apache-maven-${MAVEN_VERSION}-bin.tar.gz
     rm -rf $PREFIX/maven || true
@@ -567,6 +658,13 @@ EOF
 TBB_VERSION=2021.9.0
 
 function install_tbb() {
+
+  # if already $tbb version already exists then return and echo
+  if [[ -d $PREFIX/include/tbb ]] ; then
+    echo "TBB already installed, skipping"
+    return
+  fi
+
   patch_old_thrust_tbb
   download https://github.com/oneapi-src/oneTBB/archive/v${TBB_VERSION}.tar.gz
   extract v${TBB_VERSION}.tar.gz
@@ -612,6 +710,13 @@ LIBNUMA_VERSION=2.0.14
 MEMKIND_VERSION=1.11.0
 
 function install_memkind() {
+
+  # if already $memkind version already exists then return and echo
+  if [[ -d $PREFIX/include/memkind ]] ; then
+    echo "Memkind already installed, skipping"
+    return
+  fi
+
   download_make_install https://github.com/numactl/numactl/releases/download/v${LIBNUMA_VERSION}/numactl-${LIBNUMA_VERSION}.tar.gz
 
   download https://github.com/memkind/memkind/archive/refs/tags/v${MEMKIND_VERSION}.tar.gz
@@ -638,6 +743,13 @@ function install_memkind() {
 ABSEIL_VERSION=20230802.1
 
 function install_abseil() {
+
+  # if already $abseil version already exists then return and echo
+  if [[ -d $PREFIX/include/absl ]] ; then
+    echo "Abseil already installed, skipping"
+    return
+  fi
+
   rm -rf abseil
   mkdir -p abseil
   pushd abseil
@@ -661,6 +773,12 @@ function install_abseil() {
 VULKAN_VERSION=1.3.239.0 # 1/30/23
 
 function install_vulkan() {
+  # if already $vulkan version already exists then return and echo
+  if [[ -d $PREFIX/include/vulkan ]] ; then
+    echo "Vulkan already installed, skipping"
+    return
+  fi
+
   rm -rf vulkan
   mkdir -p vulkan
   pushd vulkan
@@ -674,6 +792,12 @@ function install_vulkan() {
 GLM_VERSION=0.9.9.8
 
 function install_glm() {
+  # if already $glm version already exists then return and echo
+  if [[ -d $PREFIX/include/glm ]] ; then
+    echo "GLM already installed, skipping"
+    return
+  fi
+
   download https://github.com/g-truc/glm/archive/refs/tags/${GLM_VERSION}.tar.gz
   extract ${GLM_VERSION}.tar.gz
   mkdir -p $PREFIX/include
@@ -683,6 +807,12 @@ function install_glm() {
 BLOSC_VERSION=1.21.2
 
 function install_blosc() {
+  # if already $blosc version already exists then return and echo
+  if [[ -d $PREFIX/include/blosc ]] ; then
+    echo "Blosc already installed, skipping"
+    return
+  fi
+
   wget --continue https://github.com/Blosc/c-blosc/archive/v${BLOSC_VERSION}.tar.gz
   tar xvf v${BLOSC_VERSION}.tar.gz
   BDIR="c-blosc-${BLOSC_VERSION}/build"
@@ -706,6 +836,12 @@ function install_blosc() {
 
 oneDAL_VERSION=2023.1.1
 function install_onedal() {
+  # if already $onedal version already exists then return and echo
+  if [[ -d $PREFIX/include/oneapi ]] ; then
+    echo "oneDAL already installed, skipping"
+    return
+  fi
+
   download https://github.com/oneapi-src/oneDAL/archive/refs/tags/${oneDAL_VERSION}.tar.gz
   extract ${oneDAL_VERSION}.tar.gz
   pushd oneDAL-${oneDAL_VERSION}
@@ -785,6 +921,12 @@ function install_pdal() {
 MOLD_VERSION=1.10.1
 
 function install_mold_precompiled_x86_64() {
+  # if already $mold version already exists then return and echo
+  if [[ -d $PREFIX/bin/mold ]] ; then
+    echo "Mold already installed, skipping"
+    return
+  fi
+
   download https://github.com/rui314/mold/releases/download/v${MOLD_VERSION}/mold-${MOLD_VERSION}-x86_64-linux.tar.gz
   tar --strip-components=1 -xvf mold-${MOLD_VERSION}-x86_64-linux.tar.gz -C ${PREFIX}
 }

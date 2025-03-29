@@ -1,0 +1,11 @@
+--- OpenSSLCryptoKeyRSA.cpp.orig	2025-03-28 16:07:39.741082873 -0500
++++ OpenSSLCryptoKeyRSA.cpp	2025-03-28 16:07:46.593070856 -0500
+@@ -413,7 +413,7 @@
+     if (k == NULL || EVP_PKEY_id(k) != EVP_PKEY_RSA)
+         return; // Nothing to do with us
+ 
+-    RSA *rsa = EVP_PKEY_get0_RSA(k);
++    RSA *rsa = const_cast<RSA *>(EVP_PKEY_get0_RSA(k));
+ 
+     const BIGNUM *n=NULL, *e=NULL, *d=NULL;
+     RSA_get0_key(rsa, &n, &e, &d);

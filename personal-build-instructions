@@ -1,0 +1,9 @@
+1. sudo apt install nvidia-driver-550-server
+2. sudo apt install nvidia-utils-550-server
+3. cd scripts
+4. ./mapd_ubuntu_deps
+5. source /usr/local/mapd-deps/something.sh
+6. mkdir build
+7. cd build 
+8. cmake .. -DCMAKE_BUILD_TYPE=debug -DENABLE_TESTS=on -DCMAKE_PREFIX_PATH=/usr/local/mapd-deps -DENABLE_AWS_S3=off 
+9. make -j $(nproc)

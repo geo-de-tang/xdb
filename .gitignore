@@ -91,3 +91,7 @@ data/
 
 # Python
 *.egg-info/
+
+scripts/*
+release/*
+release

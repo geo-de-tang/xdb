@@ -180,12 +180,12 @@ install_llvm
 install_blosc
 
 # Geo Support
-install_gdal
-install_geos
-install_pdal
+# install_gdal
+# install_geos
+# install_pdal
 
 # install AWS core and s3 sdk
-install_awscpp -j $(nproc)
+# install_awscpp -j $(nproc)
 
 # thrift
 install_thrift
@@ -218,48 +218,59 @@ install_rdkafka
 # abseil
 install_abseil
 
-# glslang (with spirv-tools)
-VERS=11.6.0 # stable 8/25/21
-rm -rf glslang
-mkdir -p glslang
-pushd glslang
-wget --continue https://github.com/KhronosGroup/glslang/archive/$VERS.tar.gz
-tar xvf $VERS.tar.gz
-pushd glslang-$VERS
-./update_glslang_sources.py
-mkdir build
-pushd build
-cmake \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_INSTALL_PREFIX=$PREFIX \
-    ..
-make -j $(nproc)
-make install
-popd # build
-popd # glslang-$VERS
-popd # glslang
+if [[ -d glslang ]] ; then
+    echo "glslang already exists, skipping build"
+else
+  # glslang (with spirv-tools)
+  VERS=11.6.0 # stable 8/25/21
+  rm -rf glslang
+  mkdir -p glslang
+  pushd glslang
+  wget --continue https://github.com/KhronosGroup/glslang/archive/$VERS.tar.gz
+  tar xvf $VERS.tar.gz
+  pushd glslang-$VERS
+  ./update_glslang_sources.py
+  mkdir build
+  pushd build
+  cmake \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_INSTALL_PREFIX=$PREFIX \
+      ..
+  make -j $(nproc)
+  make install
+  popd # build
+  popd # glslang-$VERS
+  popd # glslang
+fi
 
-# spirv-cross
-VERS=2020-06-29 # latest from 6/29/20
-rm -rf spirv-cross
-mkdir -p spirv-cross
-pushd spirv-cross
-wget --continue https://github.com/KhronosGroup/SPIRV-Cross/archive/$VERS.tar.gz
-tar xvf $VERS.tar.gz
-pushd SPIRV-Cross-$VERS
-mkdir build
-pushd build
-cmake \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_INSTALL_PREFIX=$PREFIX \
-    -DCMAKE_POSITION_INDEPENDENT_CODE=on \
-    -DSPIRV_CROSS_ENABLE_TESTS=off \
-    ..
-make -j $(nproc)
-make install
-popd # build
-popd # SPIRV-Cross-$VERS
-popd # spirv-cross
+# if spirv-cross does not exist, then build it
+
+
+if [[ -d spirv-cross ]] ; then
+  echo "spirv-cross already exists, skipping build" 
+  else
+  # spirv-cross
+  VERS=2020-06-29 # latest from 6/29/20
+  rm -rf spirv-cross
+  mkdir -p spirv-cross
+  pushd spirv-cross
+  wget --continue https://github.com/KhronosGroup/SPIRV-Cross/archive/$VERS.tar.gz
+  tar xvf $VERS.tar.gz
+  pushd SPIRV-Cross-$VERS
+  mkdir build
+  pushd build
+  cmake \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_INSTALL_PREFIX=$PREFIX \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=on \
+      -DSPIRV_CROSS_ENABLE_TESTS=off \
+      ..
+  make -j $(nproc)
+  make install
+  popd # build
+  popd # SPIRV-Cross-$VERS
+  popd # spirv-cross
+fi
 
 # Vulkan
 install_vulkan
