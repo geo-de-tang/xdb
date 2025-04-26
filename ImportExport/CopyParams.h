@@ -48,7 +48,7 @@ struct CopyParams {
   char quote;
   char escape;
   char line_delim;
-  char array_delim;
+  std::string array_delim;
   char array_begin;
   char array_end;
   int threads;
@@ -115,7 +115,7 @@ struct CopyParams {
       , quote('"')
       , escape('"')
       , line_delim('\n')
-      , array_delim(',')
+      , array_delim(",")
       , array_begin('{')
       , array_end('}')
       , threads(0)
@@ -150,7 +150,7 @@ struct CopyParams {
       , quote('"')
       , escape('"')
       , line_delim(l)
-      , array_delim(',')
+      , array_delim(",")
       , array_begin('{')
       , array_end('}')
       , threads(0)
@@ -176,6 +176,64 @@ struct CopyParams {
       , raster_point_transform(RasterPointTransform::kAuto)
       , raster_point_compute_angle{false}
       , raster_drop_if_all_null{false} {}
+
+      CopyParams(const CopyParams& other)
+    : delimiter(other.delimiter)
+    , null_str(other.null_str)
+    , has_header(other.has_header)
+    , quoted(other.quoted)
+    , quote(other.quote)
+    , escape(other.escape)
+    , line_delim(other.line_delim)
+    , array_delim(other.array_delim)
+    , array_begin(other.array_begin)
+    , array_end(other.array_end)
+    , threads(other.threads)
+    , max_reject(other.max_reject)
+    , source_type(other.source_type)
+    , plain_text(other.plain_text)
+    , trim_spaces(other.trim_spaces)
+    , s3_access_key(other.s3_access_key)
+    , s3_secret_key(other.s3_secret_key)
+    , s3_session_token(other.s3_session_token)
+    , s3_region(other.s3_region)
+    , s3_endpoint(other.s3_endpoint)
+    , s3_max_concurrent_downloads(other.s3_max_concurrent_downloads)
+    , retry_count(other.retry_count)
+    , retry_wait(other.retry_wait)
+    , batch_size(other.batch_size)
+    , buffer_size(other.buffer_size)
+    , max_import_batch_row_count(other.max_import_batch_row_count)
+    , lonlat(other.lonlat)
+    , geo_coords_encoding(other.geo_coords_encoding)
+    , geo_coords_comp_param(other.geo_coords_comp_param)
+    , geo_coords_type(other.geo_coords_type)
+    , geo_coords_srid(other.geo_coords_srid)
+    , sanitize_column_names(other.sanitize_column_names)
+    , geo_layer_name(other.geo_layer_name)
+    , geo_explode_collections(other.geo_explode_collections)
+    , geo_validate_geometry(other.geo_validate_geometry)
+    , source_srid(other.source_srid)
+    , regex_path_filter(other.regex_path_filter)
+    , file_sort_order_by(other.file_sort_order_by)
+    , file_sort_regex(other.file_sort_regex)
+    , raster_point_type(other.raster_point_type)
+    , raster_import_bands(other.raster_import_bands)
+    , raster_scanlines_per_thread(other.raster_scanlines_per_thread)
+    , raster_point_transform(other.raster_point_transform)
+    , raster_point_compute_angle(other.raster_point_compute_angle)
+    , raster_import_dimensions(other.raster_import_dimensions)
+    , add_metadata_columns(other.add_metadata_columns)
+    , raster_drop_if_all_null(other.raster_drop_if_all_null)
+    , sql_select(other.sql_select)
+    , sql_order_by(other.sql_order_by)
+    , username(other.username)
+    , password(other.password)
+    , credential_string(other.credential_string)
+    , dsn(other.dsn)
+    , connection_string(other.connection_string)
+    , line_start_regex(other.line_start_regex)
+    , line_regex(other.line_regex) {}
 };
 
 }  // namespace import_export

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "CsvShared.h"
 #include "CsvDataWrapper.h"
+#include "CsvShared.h"
 #include "DataMgr/ForeignStorage/ForeignTableSchema.h"
 #include "FsiJsonUtils.h"
 #include "ImportExport/CopyParams.h"
@@ -148,9 +148,9 @@ import_export::CopyParams validate_and_get_copy_params(
   import_export::CopyParams copy_params{};
   copy_params.plain_text = true;
   if (const auto& value =
-          validate_and_get_string_with_length(foreign_table, "ARRAY_DELIMITER", 1);
+          validate_and_get_string_with_length(foreign_table, "ARRAY_DELIMITER");
       !value.empty()) {
-    copy_params.array_delim = value[0];
+    copy_params.array_delim = value;
   }
   if (const auto& value =
           validate_and_get_string_with_length(foreign_table, "ARRAY_MARKER", 2);

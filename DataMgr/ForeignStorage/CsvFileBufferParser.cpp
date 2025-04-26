@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "DataMgr/ForeignStorage/CsvFileBufferParser.h"
 #include "DataMgr/ForeignStorage/AbstractFileStorageDataWrapper.h"
+#include "DataMgr/ForeignStorage/CsvFileBufferParser.h"
 #include "DataMgr/ForeignStorage/ForeignStorageException.h"
 #include "ImportExport/DelimitedParserUtils.h"
 #include "ImportExport/Importer.h"
@@ -81,16 +81,19 @@ std::string validate_and_get_delimiter(const ForeignTable* foreign_table,
   return "";
 }
 
-std::string validate_and_get_string_with_length(const ForeignTable* foreign_table,
-                                                const std::string& option_name,
-                                                const size_t expected_num_chars) {
+std::string validate_and_get_string_with_length(
+    const ForeignTable* foreign_table,
+    const std::string& option_name,
+    const std::optional<size_t>& expected_num_chars) {
   if (auto it = foreign_table->options.find(option_name);
       it != foreign_table->options.end()) {
-    if (it->second.length() != expected_num_chars) {
+    if (expected_num_chars.has_value() &&
+        it->second.length() != expected_num_chars.value()) {
       throw std::runtime_error{"Value of \"" + option_name +
                                "\" foreign table option has the wrong number of "
                                "characters. Expected " +
-                               std::to_string(expected_num_chars) + " character(s)."};
+                               std::to_string(expected_num_chars.value()) +
+                               " character(s)."};
     }
     return it->second;
   }
@@ -370,7 +373,7 @@ import_export::CopyParams CsvFileBufferParser::validateAndGetCopyParams(
   if (const auto& value =
           validate_and_get_string_with_length(foreign_table, ARRAY_DELIMITER_KEY, 1);
       !value.empty()) {
-    copy_params.array_delim = value[0];
+    copy_params.array_delim = value;
   }
   if (const auto& value =
           validate_and_get_string_with_length(foreign_table, ARRAY_MARKER_KEY, 2);

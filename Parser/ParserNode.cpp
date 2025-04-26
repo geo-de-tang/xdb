@@ -1278,10 +1278,8 @@ void parse_copy_params(const std::list<std::unique_ptr<NameValueAssign>>& option
             dynamic_cast<const StringLiteral*>(p->get_value());
         if (str_literal == nullptr) {
           throw std::runtime_error("Array Delimiter option must be a string.");
-        } else if (str_literal->get_stringval()->length() != 1) {
-          throw std::runtime_error("Array Delimiter must be a single character string.");
         }
-        copy_params.array_delim = (*str_literal->get_stringval())[0];
+        copy_params.array_delim = (*str_literal->get_stringval());
       } else if (boost::iequals(*p->get_name(), "lonlat")) {
         const StringLiteral* str_literal =
             dynamic_cast<const StringLiteral*>(p->get_value());

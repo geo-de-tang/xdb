@@ -342,7 +342,6 @@ void parse_string_array(const std::string& s,
 
   bool try_single_thread = false;
   import_export::CopyParams array_params = copy_params;
-  array_params.delimiter = copy_params.array_delim;
   std::vector<std::unique_ptr<char[]>> tmp_buffers;
   get_row(row.c_str(),
           row.c_str() + row.length(),
